@@ -22,7 +22,8 @@ import os
 import modeling
 import optimization
 import tokenization
-from run_classifier import create_model, file_based_input_fn_builder, file_based_convert_examples_to_features, PPIProcessor
+from classification_model import create_model, file_based_input_fn_builder, file_based_convert_examples_to_features
+from utilities import PPIProcessor
 import tensorflow as tf
 
 flags = tf.flags
@@ -42,6 +43,9 @@ flags.DEFINE_string(
 
 flags.DEFINE_string("vocab_file", None,
                     "The vocabulary file that the BERT model was trained on.")
+
+flags.DEFINE_string("output_id", None,
+                    "Output ID to diffrentiate different outputs.")
 
 flags.DEFINE_string(
     "output_dir", None,
@@ -64,7 +68,30 @@ flags.DEFINE_integer(
     "Sequences longer than this will be truncated, and sequences shorter "
     "than this will be padded.")
 
+flags.DEFINE_bool("do_train", False, "Whether to run training.")
+
+flags.DEFINE_bool("do_eval", False, "Whether to run eval on the dev set.")
+
+flags.DEFINE_bool("do_predict", False, "Whether to run the model in inference mode on the test set.")
+
+flags.DEFINE_integer("train_batch_size", 32, "Total batch size for training.")
+
+flags.DEFINE_integer("eval_batch_size", 8, "Total batch size for eval.")
+
 flags.DEFINE_integer("predict_batch_size", 8, "Total batch size for predict.")
+
+flags.DEFINE_float("learning_rate", 5e-5, "The initial learning rate for Adam.")
+
+flags.DEFINE_float("num_train_epochs", 3.0,
+                   "Total number of training epochs to perform.")
+
+flags.DEFINE_float(
+    "warmup_proportion", 0.1,
+    "Proportion of training to perform linear learning rate warmup for. "
+    "E.g., 0.1 = 10% of training.")
+
+flags.DEFINE_integer("save_checkpoints_steps", 1000,
+                     "How often to save the model checkpoint.")
 
 flags.DEFINE_integer("iterations_per_loop", 1000,
                      "How many steps to make in each estimator call.")
@@ -253,7 +280,7 @@ def main(_):
 
   if 1:
     eval_examples = processor.get_dev_examples(FLAGS.data_dir)
-    eval_file = os.path.join(FLAGS.eval_path, ".tf_record")
+    eval_file = os.path.join(FLAGS.data_dir, ".tf_record")
     examples = file_based_convert_examples_to_features(
         eval_examples, label_list, FLAGS.max_seq_length, tokenizer, eval_file)
 
@@ -279,7 +306,7 @@ def main(_):
 
     result = estimator.evaluate(input_fn=eval_input_fn, steps=eval_steps)
 
-    output_eval_file = os.path.join(FLAGS.output_dir, "eval_results.txt")
+    output_eval_file = os.path.join(FLAGS.output_dir, FLAGS.output_id + "eval_results.txt")
     with tf.gfile.GFile(output_eval_file, "w") as writer:
       tf.logging.info("***** Eval results *****")
       for key in sorted(result.keys()):
@@ -287,7 +314,8 @@ def main(_):
         writer.write("%s = %s\n" % (key, str(result[key])))
 
     predict_result = estimator.predict(input_fn=eval_input_fn)
-    output_predict_file = os.path.join(FLAGS.output_dir, "test_results.tsv")
+    predict_result = [prediction for prediction in predict_result]
+    output_predict_file = os.path.join(FLAGS.output_dir, FLAGS.output_id + "test_results.tsv")
     with tf.gfile.GFile(output_predict_file, "w") as writer:
       write_sorted_prediction(examples, predict_result, writer)
 
