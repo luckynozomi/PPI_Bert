@@ -5,8 +5,8 @@ import os
 
 
 DATA_PATH = {
-    "BioInfer": "/Users/xinsui/Dropbox/PPI_Bert/PPICorpora/BioInfer.xml",
-    "AImed": "/Users/xinsui/Dropbox/PPI_Bert/PPICorpora/AImed.xml"
+    "BioInfer": "PPICorpora/BioInfer.xml",
+    "AImed": "PPICorpora/AImed.xml"
 }
 
 PCT_TRAIN = .9

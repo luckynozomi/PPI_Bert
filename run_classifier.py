@@ -22,8 +22,8 @@ import os
 import modeling
 import optimization
 import tokenization
-from simple_classification_model import create_model
-from input_fn_builder import file_based_input_fn_builder, file_based_convert_examples_to_features, PPIProcessor
+from classification_model import create_model, file_based_input_fn_builder, file_based_convert_examples_to_features
+from utilities import PPIProcessor
 import tensorflow as tf
 
 flags = tf.flags
@@ -132,16 +132,12 @@ def model_fn_builder(bert_config, num_labels, init_checkpoint, learning_rate,
     for name in sorted(features.keys()):
       tf.logging.info("  name = %s, shape = %s" % (name, features[name].shape))
 
-    input_ids = features["input_ids"]
-    input_mask = features["input_mask"]
-    segment_ids = features["segment_ids"]
     label_ids = features["label_ids"]
 
     is_training = (mode == tf.estimator.ModeKeys.TRAIN)
 
     (total_loss, per_example_loss, logits, probabilities) = create_model(
-        bert_config, is_training, input_ids, input_mask, segment_ids, label_ids,
-        num_labels, use_one_hot_embeddings)
+        bert_config, is_training, features, label_ids, num_labels, use_one_hot_embeddings)
 
     tvars = tf.trainable_variables()
 
