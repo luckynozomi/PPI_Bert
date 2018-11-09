@@ -168,4 +168,4 @@ if __name__ == "__main__":
                     save_file(train_list, os.path.join(target_dir, "train.tsv"))
                     save_file(dev_list, os.path.join(target_dir, "dev.tsv"))
 
-        save_file(flatten_strings(ret), os.path.join(data_name, data_name + ".tsv"))
+        save_file(flatten_strings(ret), os.path.join(data_name, "dev.tsv"))

@@ -133,6 +133,8 @@ def file_based_convert_examples_to_features(
     tf_example = tf.train.Example(features=tf.train.Features(feature=features))
     writer.write(tf_example.SerializeToString())
 
+  return examples
+
 
 def file_based_input_fn_builder(input_file, seq_length, is_training,
                                 drop_remainder):

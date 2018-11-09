@@ -18,8 +18,8 @@ class InputFeatures(object):
 def sublist_index(sublist, this_list):
     ret = -1
     for idx in range(len(this_list) - len(sublist) + 1):
-        if sum(sublist[index] == this_list(index) for index in range(idx, idx+len(sublist))) == len(sublist):
-            ret = -1
+        if sum([sublist[index] == this_list[index + idx] for index in range(len(sublist))]) == len(sublist):
+            ret = idx
             break
     if ret == -1:
         raise ValueError(' '.join(sublist) + " is not a sublist of " + ' '.join(this_list) + '\n')
@@ -121,12 +121,18 @@ def file_based_convert_examples_to_features(examples, label_list, max_seq_length
     """Convert a set of `InputExample`s to a TFRecord file."""
 
     writer = tf.python_io.TFRecordWriter(output_file)
+    ret = []
 
     for (ex_index, example) in enumerate(examples):
         if ex_index % 10000 == 0:
             tf.logging.info("Writing example %d of %d" % (ex_index, len(examples)))
 
-        feature = convert_single_example(ex_index, example, label_list, max_seq_length, tokenizer)
+        try:
+            feature = convert_single_example(ex_index, example, label_list, max_seq_length, tokenizer)
+        except ValueError as e:
+            print("Cannot convert line %d to features.", ex_index)
+            print("Error message", e)
+            continue
 
         def create_int_feature(values):
             f = tf.train.Feature(int64_list=tf.train.Int64List(value=list(values)))
@@ -141,6 +147,10 @@ def file_based_convert_examples_to_features(examples, label_list, max_seq_length
 
         tf_example = tf.train.Example(features=tf.train.Features(feature=features))
         writer.write(tf_example.SerializeToString())
+
+        ret.append(example)
+
+    return ret
 
 
 def file_based_input_fn_builder(input_file, seq_length, is_training, drop_remainder):
@@ -217,9 +227,11 @@ def create_model(bert_config, is_training, features,
     output_layer = model.get_sequence_output()
     hidden_size = output_layer.shape[-1].value
 
-    # masked_output: [batch_size, 3, hidden_size]
-    masked_output = tf.gather(output_layer, entity_mask)
-    masked_output = tf.reshape(masked_output, [-1, 3 * hidden_size])
+    with tf.variable_scope("gather"):
+        # masked_output: [batch_size, 3, hidden_size]
+        # result[i1, ..., in] = params[i1, ..., in-1, indices[i1, ..., in]]
+        masked_output = tf.batch_gather(output_layer, entity_mask)
+        masked_output = tf.reshape(masked_output, [-1, 3 * hidden_size])
 
     output_weights = tf.get_variable(
         "output_weights", [num_labels, 3 * hidden_size],
