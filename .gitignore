@@ -47,4 +47,6 @@ tmtagsHistory
 # Whitelist some directory #
 #!AImed
 
-
+# Others #
+results.md
+*.sh
