@@ -1,6 +1,6 @@
 import os
 
-CORPUS = "BioInfer"
+CORPUS = "AImed"
 SEP_METHOD = "SEP_SENT"
 AUGMENT_METHOD = "ORIG"
 OUTPUT_DIR = "ppi_lstm_data"

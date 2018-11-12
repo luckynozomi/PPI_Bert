@@ -22,7 +22,6 @@ import os
 import modeling
 import optimization
 import tokenization
-from classification_model import create_model, file_based_input_fn_builder, file_based_convert_examples_to_features
 from utilities import PPIProcessor
 import tensorflow as tf
 
@@ -35,6 +34,11 @@ flags.DEFINE_string(
     "data_dir", None,
     "The input data dir. Should contain the .tsv files (or other data files) "
     "for the task.")
+
+flags.DEFINE_string(
+    "model", None,
+    "The model used."
+)
 
 flags.DEFINE_string(
     "bert_config_file", None,
@@ -121,6 +125,12 @@ tf.flags.DEFINE_string("master", None, "[Optional] TensorFlow master URL.")
 flags.DEFINE_integer(
     "num_tpu_cores", 8,
     "Only used if `use_tpu` is True. Total number of TPU cores to use.")
+
+
+if FLAGS.model == "Sentence_Model":
+    from sentence_model import create_model, file_based_input_fn_builder, file_based_convert_examples_to_features
+else:
+    from instance_model import create_model, file_based_input_fn_builder, file_based_convert_examples_to_features
 
 
 def model_fn_builder(bert_config, num_labels, init_checkpoint, learning_rate,
