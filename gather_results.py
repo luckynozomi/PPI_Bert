@@ -4,6 +4,7 @@ data_name = "BioInfer"
 split_method = "SEP_SENT"
 append_method = "ORIG"
 num_folds = 10
+num_iters = 9
 model_name = "trained_model"
 
 
@@ -12,6 +13,25 @@ def parse_result_line(line):
     name = name.strip()
     value = float(value)
     return name, value
+
+
+def gather_files():
+    ret = []
+
+    dirs = [os.path.join(data_name, split_method, append_method, "fold_"+str(fold)) for fold in range(num_folds)]
+
+    for dir in dirs:
+        ret.append(os.path.join(dir, model_name, "eval_results.txt"))
+
+    return ret
+
+
+def gather_CC_files():
+    ret = []
+    dirs = [os.path.join(data_name, append_method, model_name, "iter-"+str(iteration)) for iteration in range(num_iters)]
+    for dir in dirs:
+        ret.append(os.path.join(dir, "eval_results.txt"))
+    return ret
 
 
 def gather_results():

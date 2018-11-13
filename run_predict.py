@@ -218,10 +218,11 @@ def model_fn_builder(bert_config, num_labels, init_checkpoint, learning_rate,
   return model_fn
 
 
-def write_sorted_prediction(examples, predict_result, writer):
+def write_prediction(examples, predict_result, writer, sort_py_prob=False):
     num_examples = len(examples)
     idxes = [i for i in range(num_examples)]
-    idxes.sort(key=lambda idx: predict_result[idx][1])
+    if sort_py_prob is True:
+        idxes.sort(key=lambda idx: predict_result[idx][1])
     for idx in idxes:
         example_str = str(examples[idx].label) + '\t' + examples[idx].text_a
         predict_str = str(predict_result[idx][1])
@@ -327,7 +328,7 @@ def main(_):
     predict_result = [prediction for prediction in predict_result]
     output_predict_file = os.path.join(FLAGS.output_dir, FLAGS.output_id + "test_results.tsv")
     with tf.gfile.GFile(output_predict_file, "w") as writer:
-      write_sorted_prediction(examples, predict_result, writer)
+      write_prediction(examples, predict_result, writer, sort_py_prob=False)
 
 
 if __name__ == "__main__":
