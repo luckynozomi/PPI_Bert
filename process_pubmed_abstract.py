@@ -22,8 +22,11 @@ def my_sentence_split_func(Str):
         sentArr.append(tmpSent)
     return sentArr
 
-INPUT_PATH = "pubmed18n0001PubMed_list.csv"
-OUTPUT_PATH = ""
+INPUT_PATH = "/home/cl17d/pubmed_output"
+OUTPUT_PATH = "pubmed"
+
+if not os.path.exists(OUTPUT_PATH):
+    os.mkdir(OUTPUT_PATH)
 
 for file in os.listdir(INPUT_PATH):
 
