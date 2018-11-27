@@ -3,8 +3,8 @@ import copy
 import os
 
 
-result_path = "/Users/xinsui/Dropbox/PPI_Bert"
-result_files = [os.path.join(result_path, str(i)+"test_results.tsv") for i in range(1)]
+result_path = "/home/manbish/Documents/PPI_Bert/AImed_Results"
+result_files = [os.path.join(result_path, str(i)+"test_results.tsv") for i in range(10)]
 
 
 def calc_f1(pred_labels, true_labels):
@@ -56,10 +56,10 @@ if __name__ == "__main__":
         all_results.append([probs, true_labels])
 
     all_probs = list(set(all_probs))
-    sorted(all_probs)
+    all_probs.sort()
     for this_cutoff in all_probs:
         this_stat = calc_average_f1(all_results, this_cutoff, len(result_files))
         stats.append(list(this_stat))
 
-    sorted(stats, key=lambda i: i[2], reverse=True)
+    stats.sort(key=lambda i: i[2], reverse=True)
     print(stats[0])
