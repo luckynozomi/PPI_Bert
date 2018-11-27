@@ -22,7 +22,6 @@ import os
 import modeling
 import optimization
 import tokenization
-from classification_model import create_model, file_based_input_fn_builder, file_based_convert_examples_to_features
 from utilities import PPIProcessor
 import tensorflow as tf
 
@@ -40,6 +39,11 @@ flags.DEFINE_string(
     "bert_config_file", None,
     "The config json file corresponding to the pre-trained BERT model. "
     "This specifies the model architecture.")
+
+flags.DEFINE_string(
+    "model", None,
+    "The model to use. Has to be either Sentence_Model or Instance_Model. "
+)
 
 flags.DEFINE_string("vocab_file", None,
                     "The vocabulary file that the BERT model was trained on.")
@@ -118,6 +122,13 @@ tf.flags.DEFINE_string("master", None, "[Optional] TensorFlow master URL.")
 flags.DEFINE_integer(
     "num_tpu_cores", 8,
     "Only used if `use_tpu` is True. Total number of TPU cores to use.")
+
+if FLAGS.model == "Sentence_Model":
+    from sentence_model import create_model, file_based_input_fn_builder, file_based_convert_examples_to_features
+elif FLAGS.model == "Instance_Model":
+    from instance_model import create_model, file_based_input_fn_builder, file_based_convert_examples_to_features
+else:
+    raise ValueError("FLAGS.model has to be either Sentence_Model or Instance_Model. But received " + FLAGS.model)
 
 
 def model_fn_builder(bert_config, num_labels, init_checkpoint, learning_rate,

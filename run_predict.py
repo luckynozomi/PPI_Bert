@@ -22,7 +22,6 @@ import os
 import modeling
 import optimization
 import tokenization
-from classification_model import create_model, file_based_input_fn_builder, file_based_convert_examples_to_features
 from utilities import PPIProcessor
 import tensorflow as tf
 
@@ -35,6 +34,11 @@ flags.DEFINE_string(
     "data_dir", None,
     "The input data dir. Should contain the .tsv files (or other data files) "
     "for the task.")
+
+flags.DEFINE_string(
+    "model", None,
+    "The model used."
+)
 
 flags.DEFINE_string(
     "bert_config_file", None,
@@ -123,6 +127,12 @@ flags.DEFINE_integer(
     "Only used if `use_tpu` is True. Total number of TPU cores to use.")
 
 
+if FLAGS.model == "Sentence_Model":
+    from sentence_model import create_model, file_based_input_fn_builder, file_based_convert_examples_to_features
+else:
+    from instance_model import create_model, file_based_input_fn_builder, file_based_convert_examples_to_features
+
+
 def model_fn_builder(bert_config, num_labels, init_checkpoint, learning_rate,
                      num_train_steps, num_warmup_steps, use_tpu,
                      use_one_hot_embeddings):
@@ -208,10 +218,11 @@ def model_fn_builder(bert_config, num_labels, init_checkpoint, learning_rate,
   return model_fn
 
 
-def write_sorted_prediction(examples, predict_result, writer):
+def write_prediction(examples, predict_result, writer, sort_py_prob=False):
     num_examples = len(examples)
     idxes = [i for i in range(num_examples)]
-    idxes.sort(key=lambda idx: predict_result[idx][1])
+    if sort_py_prob is True:
+        idxes.sort(key=lambda idx: predict_result[idx][1])
     for idx in idxes:
         example_str = str(examples[idx].label) + '\t' + examples[idx].text_a
         predict_str = str(predict_result[idx][1])
@@ -317,7 +328,7 @@ def main(_):
     predict_result = [prediction for prediction in predict_result]
     output_predict_file = os.path.join(FLAGS.output_dir, FLAGS.output_id + "test_results.tsv")
     with tf.gfile.GFile(output_predict_file, "w") as writer:
-      write_sorted_prediction(examples, predict_result, writer)
+      write_prediction(examples, predict_result, writer, sort_py_prob=False)
 
 
 if __name__ == "__main__":

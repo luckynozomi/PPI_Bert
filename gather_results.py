@@ -1,10 +1,11 @@
 import os
 
-data_name = "BioInfer"
-split_method = "SEP_SENT"
-append_method = "ORIG"
+data_name = "AImed_CC"
+split_method = "SEP_INS"
+append_method = "BALA"
 num_folds = 10
-model_name = "trained_model"
+num_iters = 9
+model_name = "Instance_Model"
 
 
 def parse_result_line(line):
@@ -14,12 +15,31 @@ def parse_result_line(line):
     return name, value
 
 
-def gather_results():
+def gather_files():
+    ret = []
+
     dirs = [os.path.join(data_name, split_method, append_method, "fold_"+str(fold)) for fold in range(num_folds)]
 
-    result_dict = {}
     for dir in dirs:
-        with open(os.path.join(dir, model_name, "eval_results.txt"), "r") as result_file:
+        ret.append(os.path.join(dir, model_name, "eval_results.txt"))
+
+    return ret
+
+
+def gather_CC_files():
+    ret = []
+    dirs = [os.path.join(data_name, append_method, model_name, "iter-"+str(iteration)) for iteration in range(num_iters)]
+    for dir in dirs:
+        ret.append(os.path.join(dir, "eval_results.txt"))
+    return ret
+
+
+def gather_results():
+    dirs = [os.path.join(data_name, split_method, append_method, "fold_"+str(fold)) for fold in range(num_folds)]
+    
+    result_dict = {}
+    for ret_file in gather_CC_files():
+        with open(ret_file, "r") as result_file:
             precision = recall = 0
             for line in result_file:
                 name, value = parse_result_line(line)
