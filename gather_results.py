@@ -1,6 +1,6 @@
 import os
 
-data_name = "AImed_CC"
+data_name = "AImed_split_ins"
 split_method = "SEP_INS"
 append_method = "BALA"
 num_folds = 10
@@ -18,7 +18,7 @@ def parse_result_line(line):
 def gather_files():
     ret = []
 
-    dirs = [os.path.join(data_name, split_method, append_method, "fold_"+str(fold)) for fold in range(num_folds)]
+    dirs = [os.path.join(data_name, append_method, "fold_"+str(fold)) for fold in range(num_folds)]
 
     for dir in dirs:
         ret.append(os.path.join(dir, model_name, "eval_results.txt"))
@@ -38,7 +38,7 @@ def gather_results():
     dirs = [os.path.join(data_name, split_method, append_method, "fold_"+str(fold)) for fold in range(num_folds)]
     
     result_dict = {}
-    for ret_file in gather_CC_files():
+    for ret_file in gather_files():
         with open(ret_file, "r") as result_file:
             precision = recall = 0
             for line in result_file:

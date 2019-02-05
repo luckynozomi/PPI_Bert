@@ -83,6 +83,7 @@ class PPIProcessor(DataProcessor):
     for (i, line) in enumerate(lines):
       guid = "%s-%s" % (set_type, i)
       text_a = tokenization.convert_to_unicode(line[2])
+      text_a = pre_process_text(text_a)
       label = tokenization.convert_to_unicode(line[1])
       examples.append(
           InputExample(guid=guid, text_a=text_a, text_b=None, label=label))
@@ -104,3 +105,24 @@ def truncate_seq_pair(tokens_a, tokens_b, max_length):
       tokens_a.pop()
     else:
       tokens_b.pop()
+
+
+def sublist_index(sublist, this_list):
+    ret = -1
+    for idx in range(len(this_list) - len(sublist) + 1):
+        if sum([sublist[index] == this_list[index + idx] for index in range(len(sublist))]) == len(sublist):
+            ret = idx
+            break
+    if ret == -1:
+        raise ValueError(' '.join(sublist) + " is not a sublist of " + ' '.join(this_list) + '\n')
+    return ret
+
+
+def pre_process_text(text):
+    tokens = text.split(" ")
+    pos_1 = sublist_index(["PROTEIN1"], tokens)
+    pos_2 = sublist_index(["PROTEIN2"], tokens)
+    if pos_1 > pos_2:
+        tokens[pos_1] = "PROTEIN2"
+        tokens[pos_2] = "PROTEIN1"
+    return " ".join(tokens)

@@ -27,8 +27,8 @@ def sublist_index(sublist, this_list):
 
 
 def get_entity_mask(tokens, tokenizer):
-    prot_A_masks = tokenizer.tokenize("protein1")
-    prot_B_masks = tokenizer.tokenize("protein2")
+    prot_A_masks = tokenizer.tokenize("PROTEIN1")
+    prot_B_masks = tokenizer.tokenize("PROTEIN2")
     idx1 = sublist_index(prot_A_masks, tokens)
     idx2 = sublist_index(prot_B_masks, tokens)
     return [0, idx1, idx2]
