@@ -1,3 +1,11 @@
+## Installing packages
+I tested this project with python 3.6.9
+with the following packages and versions:
+tensorflow==1.14.0
+gast==0.2.2 (note that you have to install this specific version, o/w there will be errors)
+
+You can install all the packages I used (for running on CPU) using `pip install -r requirements-cpu.txt`, preferrablely under using a virtual environment.
+
 ## Data Input
 All datas are stored in a `.tsv` (tab separated text file) file. Each row is an entry, and each entry has 3 items (separated by tab `\t`):
 * guid: an unique ID for this entry. This is not used in training as a feature.
