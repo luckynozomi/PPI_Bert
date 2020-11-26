@@ -53,6 +53,12 @@ flags.DEFINE_integer(
     "than this will be padded. Must match data generation.")
 
 flags.DEFINE_integer(
+    "max_pred_seq_length", 256,
+    "The maximum total input sequence length after WordPiece tokenization. "
+    "Sequences longer than this will be truncated, and sequences shorter "
+    "than this will be padded. Must match data generation.")
+
+flags.DEFINE_integer(
     "max_predictions_per_seq", 20,
     "Maximum number of masked LM predictions per sequence. "
     "Must match data generation.")
@@ -471,7 +477,7 @@ def main(_):
 
     eval_input_fn = input_fn_builder(
         input_files=input_files,
-        max_seq_length=FLAGS.max_seq_length,
+        max_seq_length=FLAGS.max_pred_seq_length,
         max_predictions_per_seq=FLAGS.max_predictions_per_seq,
         is_training=False)
 

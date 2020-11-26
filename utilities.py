@@ -81,12 +81,12 @@ class PPIProcessor(DataProcessor):
     """Creates examples for the training and dev sets."""
     examples = []
     for (i, line) in enumerate(lines):
-      guid = "%s-%s" % (set_type, i)
-      text_a = tokenization.convert_to_unicode(line[2])
-      text_a = pre_process_text(text_a)
+      guid = line[0]
+      text = tokenization.convert_to_unicode(line[2])
+      text = pre_process_text(text)
       label = tokenization.convert_to_unicode(line[1])
       examples.append(
-          InputExample(guid=guid, text_a=text_a, text_b=None, label=label))
+          InputExample(guid=guid, text_a=text, text_b=None, label=label))
     return examples
 
 

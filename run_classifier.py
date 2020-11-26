@@ -69,6 +69,12 @@ flags.DEFINE_integer(
     "Sequences longer than this will be truncated, and sequences shorter "
     "than this will be padded.")
 
+flags.DEFINE_integer(
+    "max_pred_seq_length", 256,
+    "The maximum total input sequence length after WordPiece tokenization. "
+    "Sequences longer than this will be truncated, and sequences shorter "
+    "than this will be padded.")
+
 flags.DEFINE_bool("do_train", False, "Whether to run training.")
 
 flags.DEFINE_bool("do_eval", False, "Whether to run eval on the dev set.")
@@ -304,7 +310,7 @@ def main(_):
     eval_examples = processor.get_dev_examples(FLAGS.data_dir)
     eval_file = os.path.join(FLAGS.output_dir, "eval.tf_record")
     file_based_convert_examples_to_features(
-        eval_examples, label_list, FLAGS.max_seq_length, tokenizer, eval_file)
+        eval_examples, label_list, FLAGS.max_pred_seq_length, tokenizer, eval_file)
 
     tf.logging.info("***** Running evaluation *****")
     tf.logging.info("  Num examples = %d", len(eval_examples))
@@ -322,7 +328,7 @@ def main(_):
     eval_drop_remainder = True if FLAGS.use_tpu else False
     eval_input_fn = file_based_input_fn_builder(
         input_file=eval_file,
-        seq_length=FLAGS.max_seq_length,
+        seq_length=FLAGS.max_pred_seq_length,
         is_training=False,
         drop_remainder=eval_drop_remainder)
 
@@ -339,7 +345,7 @@ def main(_):
     predict_examples = processor.get_test_examples(FLAGS.data_dir)
     predict_file = os.path.join(FLAGS.output_dir, "predict.tf_record")
     file_based_convert_examples_to_features(predict_examples, label_list,
-                                 FLAGS.max_seq_length, tokenizer, predict_file)
+                                 FLAGS.max_pred_seq_length, tokenizer, predict_file)
 
     tf.logging.info("***** Running prediction*****")
     tf.logging.info("  Num examples = %d", len(predict_examples))
@@ -353,7 +359,7 @@ def main(_):
     predict_drop_remainder = True if FLAGS.use_tpu else False
     predict_input_fn = file_based_input_fn_builder(
       input_file=predict_file,
-      seq_length=FLAGS.max_seq_length,
+      seq_length=FLAGS.max_pred_seq_length,
       is_training=False,
       drop_remainder=predict_drop_remainder)
 

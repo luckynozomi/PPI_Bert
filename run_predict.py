@@ -222,11 +222,11 @@ def write_prediction(examples, predict_result, writer, sort_py_prob=False):
     num_examples = len(examples)
     idxes = [i for i in range(num_examples)]
     if sort_py_prob is True:
-        idxes.sort(key=lambda idx: predict_result[idx][1])
+        idxes.sort(key=lambda idx: predict_result[idx][0])
     for idx in idxes:
         example_str = str(examples[idx].label) + '\t' + examples[idx].text_a
-        predict_str = str(predict_result[idx][1])
-        writer.write(predict_str + '\t' + example_str + '\n')
+        predict_str = str(predict_result[idx])
+        writer.write(str(examples[idx].guid) + '\t' + predict_str + '\t' + example_str + '\n')
 
 
 def main(_):
@@ -314,15 +314,6 @@ def main(_):
         seq_length=FLAGS.max_seq_length,
         is_training=False,
         drop_remainder=eval_drop_remainder)
-
-    result = estimator.evaluate(input_fn=eval_input_fn, steps=eval_steps)
-
-    output_eval_file = os.path.join(FLAGS.output_dir, FLAGS.output_id + "eval_results.txt")
-    with tf.gfile.GFile(output_eval_file, "w") as writer:
-      tf.logging.info("***** Eval results *****")
-      for key in sorted(result.keys()):
-        tf.logging.info("  %s = %s", key, str(result[key]))
-        writer.write("%s = %s\n" % (key, str(result[key])))
 
     predict_result = estimator.predict(input_fn=eval_input_fn)
     predict_result = [prediction for prediction in predict_result]

@@ -41,11 +41,6 @@ tmtagsHistory
 *.sublime-workspace
 .bundle
 
-# Ignore any directory #
-*/
-
-# Whitelist some directory #
-#!AImed
 
 # Others #
 results.md
