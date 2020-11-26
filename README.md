@@ -44,6 +44,8 @@ Instance model is implemented in [instance_model.py](instance_model.py).
 
 Both the scripts mentioned below should be able to run after you changed `PROJECT_DIR`.
 
+Refer to the [BERT repo](https://github.com/google-research/bert) for additional pretrained models, as well as [BioBert repo](https://github.com/dmis-lab/biobert) for models pre-trained with bio text.
+
 ### Train the model
 Run [fine_tune.sh](fine_tune.sh) to train the model. Please refer to the file itself for documentations.
 
