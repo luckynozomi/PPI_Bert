@@ -2,7 +2,7 @@
 I tested this project with python 3.6.9
 with the following packages and versions:
 tensorflow==1.14.0
-gast==0.2.2 (note that you have to install this specific version, o/w there will be errors)
+gast==0.2.2 (note that you have to install this specific version and overwrite the one installed by tensorflow, o/w there will be errors)
 
 You can install all the packages I used (for running on CPU) using `pip install -r requirements-cpu.txt`, preferrablely under using a virtual environment.
 
@@ -12,9 +12,11 @@ All datas are stored in a `.tsv` (tab separated text file) file. Each row is an 
 * label: the real label of this entry.
 * sentence: the sentnece of this entry.
 
-### PPI Example
-Examples on protein-protein interactions are included in this project. They can be viewed in the `AIMed` directory.
-This directory contains 2 files: [train.tsv](AIMed/train.tsv) and [dev.tsv](AIMed/dev.tsv). They contain data used for training and testing respectively. Note that labels for testing data are not used in the prediction process, but rather used for calculating accuracy statistics: precision, recall, etc..
+AIMed corpus is already split into training and testing sets. They can be viewed in the `AIMed` directory.
+
+This directory contains 2 files: [train.tsv](AIMed/train.tsv) and [dev.tsv](AIMed/dev.tsv). Note that labels for testing data are not used in the prediction process, but rather used for calculating accuracy statistics: precision, recall, etc..
+
+For running the code on BioInfer, you'll need to create a directory named BioInfer and split BioInfer data in `processed_corpus/BioInfer.tsv` into train/dev sets manually.
 
 ### Change to other types of data
 See `PPIProcessor` in [utilities.py](utilities.py) as a template. What you need to change:
@@ -40,7 +42,7 @@ Sentence Model is implemented in [sentence_model.py](sentence_model.py).
 ### Instance Model
 Instance Model joins all the representations from tokens indexed with `entity_mask`, (aka token `[CLS]`, `PROT1`, and `PROT2`) and use this long output as input to the classification layers.
 
-The `entity_mask` for the above sentence is `[0, 2, 5]`, where 2 and 5 are the positions of `PROT1` and `PROT2` in the sentence.
+The `entity_mask` for the above sentence is `[0, 1, 4]`, where 1 and 4 are the positions of `PROT1` and `PROT2` in the sentence.
 
 Note that if you use instance model, you would implemented the way to calculate `entity_mask` yourself. The function is `get_entity_mask()`. It takes 2 input parameters:
 1. `tokens`: this is the list of tokens after tokenization.
@@ -69,3 +71,18 @@ Run [predict.sh](predict.sh) to predict. Please refer to the file itself for doc
 
 ### Change prediction metrics
 If you wish to change prediction metrics (e.g., precision, recall), go to `metric_fn` function in both [run_classifier.py](run_classifier.py) and [run_predict.py](run.predict.py) and modify the metrics. Use [this documentation](https://www.tensorflow.org/versions/r1.15/api_docs/python/tf/metrics) for the available metrics.
+
+
+
+Sentence
+CHEM1 interacts with GENE1, and GENE1 interacts with CHEM2.
+
+
+Sentence contains multiple instances:
+Instance 1
+Y [CLS] chem_name interacts with gene_name, and GENE1 interacts with CHEM2.
+   xxx    xxx                       xxx 
+
+Instance 2
+N [CLS] chem_name interacts with GENE1, and gene_name interacts with CHEM2.
+   xxx      xxx                                xxx
