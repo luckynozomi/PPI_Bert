@@ -4,7 +4,9 @@ with the following packages and versions:
 tensorflow==1.14.0
 gast==0.2.2 (note that you have to install this specific version and overwrite the one installed by tensorflow, o/w there will be errors)
 
-You can install all the packages I used (for running on CPU) using `pip install -r requirements-cpu.txt`, preferrablely under using a virtual environment.
+You can install all the packages I used (for running on CPU) using `pip install -r requirements-cpu.txt`, preferrablely under using a virtual environment. 
+
+If you want to use GPU, use `pip install -r requirements.txt`. Depending on your CUDA version, this may require additional setups.
 
 ## Data Input
 All datas are stored in a `.tsv` (tab separated text file) file. Each row is an entry, and each entry has 3 items (separated by tab `\t`):
@@ -61,6 +63,9 @@ Both the scripts mentioned below should be able to run after you changed `PROJEC
 Refer to the [BERT repo](https://github.com/google-research/bert) for additional pretrained models, as well as [BioBert repo](https://github.com/dmis-lab/biobert) for models pre-trained with bio text.
 
 ### Train the model
+
+First, use `chmod +x *.sh` to make all shell files executable.
+
 Run [fine_tune.sh](fine_tune.sh) to train the model. Please refer to the file itself for documentations.
 
 You can refer to the original bert readme file [BERT_README.md](BERT_README.md) for suggested values.
