@@ -29,6 +29,10 @@ See `PPIProcessor` in [utilities.py](utilities.py) as a template. What you need 
 
 Finally, in [run_classifier.py](run_classifier.py), change all the instances of `PPIProcessor` to the name of your own data processor.
 
+## Change model size
+
+Only bert-tiny is included in this repository. If you wish to use larger BERT models, download them from [official repo](https://github.com/google-research/bert), and then change `PRETRAIN_DIR` and `PRETRAINED_MODEL` variables.
+
 ## Instance Model vs. Sentence Model
 
 ### Sentence Model
@@ -71,18 +75,3 @@ Run [predict.sh](predict.sh) to predict. Please refer to the file itself for doc
 
 ### Change prediction metrics
 If you wish to change prediction metrics (e.g., precision, recall), go to `metric_fn` function in both [run_classifier.py](run_classifier.py) and [run_predict.py](run.predict.py) and modify the metrics. Use [this documentation](https://www.tensorflow.org/versions/r1.15/api_docs/python/tf/metrics) for the available metrics.
-
-
-
-Sentence
-CHEM1 interacts with GENE1, and GENE1 interacts with CHEM2.
-
-
-Sentence contains multiple instances:
-Instance 1
-Y [CLS] chem_name interacts with gene_name, and GENE1 interacts with CHEM2.
-   xxx    xxx                       xxx 
-
-Instance 2
-N [CLS] chem_name interacts with GENE1, and gene_name interacts with CHEM2.
-   xxx      xxx                                xxx
