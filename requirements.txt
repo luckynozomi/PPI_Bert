@@ -10,7 +10,7 @@ Keras-Applications==1.0.8
 Keras-Preprocessing==1.1.2
 Markdown==3.3.3
 numpy==1.19.4
-protobuf==3.14.0
+protobuf==3.18.3
 six==1.15.0
 tensorboard==1.14.0
 tensorflow-gpu==1.14.0
